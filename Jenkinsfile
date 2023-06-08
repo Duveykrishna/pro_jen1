@@ -2,7 +2,7 @@
                 
 pipeline{
         agent{
-            label "dev"
+            label "ubuntu"
        }
          stages{
         stage("Pull Code fromSCM"){
@@ -12,21 +12,21 @@ pipeline{
         }
         stage("Build Image Docker"){
             steps{
-                sh 'sudo docker build -t insta_app:$BUILD_TAG .'
-		sh 'sudo docker tag insta_app:$BUILD_TAG amansingh12/insta_app:$BUILD_TAG'
+                sh 'sudo docker build -t kuber_image:$BUILD_TAG .'
+		sh 'sudo docker tag kuber_image:$BUILD_TAG soft14308/kuber_image:$BUILD_TAG'
             }
         }
         stage("push The image Docker-Hub "){
             steps{
                 withCredentials([string(credentialsId: 'docker_hub', variable: 'docker_var')]){
-                sh 'sudo docker login -u amansingh12 -p $docker_var'
-		        sh 'sudo docker push amansingh12/insta_app:$BUILD_TAG'
+                sh 'sudo docker login -u soft14308 -p $docker_var'
+		        sh 'sudo docker push soft14308/kuber_image:$BUILD_TAG'
                  }
             }
         }
         stage("QAT Work"){
             steps{
-                 sh 'sudo docker run -dit -p 80:80 amansingh12/insta_app'
+                 sh 'sudo docker run -dit -p 80:80 soft14308/kuber_image:$BUILD_TAG'
             }
         }
         stage("Testing Perfect Ready for Production"){
@@ -46,10 +46,10 @@ pipeline{
         }	 
         stage("Build The Kubernetes Containers For Production"){
             agent{
-                label "deploy"
+                label "jenkins"
             }
             steps{
-                sh"kubectl create deployment kbc --image=amansingh12/insta_app:jenkins-demo-pipe-3"
+                sh"kubectl create deployment kbc --image=soft14308/kuber_image:$BUILD_TAG"
                 sh"kubectl expose deployment kbc --type=NodePort --port=80"
                 sh"kubectl get svc"
             }
