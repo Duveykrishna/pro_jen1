@@ -7,7 +7,7 @@ pipeline{
          stages{
         stage("Pull Code fromSCM"){
             steps{
-                git branch: 'master', url: 'https://github.com/jaatbreak/simple_repo.git'
+                git branch: 'main', url: 'https://github.com/duveykrishna/pro_jen1.git'
             }
         }
         stage("Build Image Docker"){
